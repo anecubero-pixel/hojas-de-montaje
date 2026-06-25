@@ -903,7 +903,7 @@ function apiCall(url) {
     var timeout = setTimeout(function() {
       cleanup();
       reject(new Error('Timeout'));
-    }, 30000);
+    }, 60000);
     function cleanup() {
       clearTimeout(timeout);
       delete window[cbName];
