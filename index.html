@@ -1980,7 +1980,134 @@ async function loadModificaciones() {
 
 
 
-// ── PLANIFICACIÓN ─────────────────────────────────────────────────────────
+// ── LOGIN Y ADMIN ─────────────────────────────────────────────────────────
+
+var adminUnlocked = false;
+var adminUnlockedAt = null;
+var ADMIN_SESSION_MS = 5 * 60 * 1000;
+
+function isAdmin() {
+  return adminUnlocked && adminUnlockedAt && (Date.now() - adminUnlockedAt) < ADMIN_SESSION_MS;
+}
+
+function abrirLogin() {
+  var modal = document.getElementById('login-modal');
+  modal.style.display = 'flex';
+  document.getElementById('login-error').style.display = 'none';
+  if (isAdmin()) {
+    document.getElementById('login-ok').style.display = 'block';
+    document.getElementById('login-cerrar-sesion').style.display = 'block';
+    document.getElementById('login-user').style.display = 'none';
+    document.getElementById('login-pass').style.display = 'none';
+  } else {
+    document.getElementById('login-ok').style.display = 'none';
+    document.getElementById('login-cerrar-sesion').style.display = 'none';
+    document.getElementById('login-user').style.display = '';
+    document.getElementById('login-pass').style.display = '';
+    setTimeout(function(){ document.getElementById('login-user').focus(); }, 100);
+  }
+}
+
+function cerrarLogin() {
+  document.getElementById('login-modal').style.display = 'none';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+function submitLogin() {
+  if (window._loginSubmitOverride) { window._loginSubmitOverride(); return; }
+  var user = document.getElementById('login-user').value.trim();
+  var pass = document.getElementById('login-pass').value;
+  if (user === 'ane_c' && pass === '231234') {
+    adminUnlocked = true;
+    adminUnlockedAt = Date.now();
+    document.getElementById('login-btn').style.background = 'rgba(34,197,94,0.3)';
+    document.getElementById('login-btn').style.borderColor = 'rgba(34,197,94,0.6)';
+    cerrarLogin();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-pass').focus();
+  }
+}
+
+function cerrarSesion() {
+  adminUnlocked = false;
+  adminUnlockedAt = null;
+  document.getElementById('login-btn').style.background = 'rgba(255,255,255,0.15)';
+  document.getElementById('login-btn').style.borderColor = 'rgba(255,255,255,0.3)';
+  cerrarLogin();
+}
+
+function requireAdmin(callback) {
+  if (isAdmin()) { callback(); return; }
+  window._pendingAdminCallback = callback;
+  window._loginSubmitOverride = function() {
+    var user = document.getElementById('login-user').value.trim();
+    var pass = document.getElementById('login-pass').value;
+    if (user === 'ane_c' && pass === '231234') {
+      adminUnlocked = true;
+      adminUnlockedAt = Date.now();
+      document.getElementById('login-btn').style.background = 'rgba(34,197,94,0.3)';
+      document.getElementById('login-btn').style.borderColor = 'rgba(34,197,94,0.6)';
+      cerrarLogin();
+      window._loginSubmitOverride = null;
+      if (window._pendingAdminCallback) {
+        var cb = window._pendingAdminCallback;
+        window._pendingAdminCallback = null;
+        cb();
+      }
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('login-pass').value = '';
+      document.getElementById('login-pass').focus();
+    }
+  };
+  abrirLogin();
+}
+
+function checkParamsPassword(maq) {
+  if (isAdmin()) { loadParamsTable(maq); return; }
+  window._pendingAdminCallback = function() { loadParamsTable(maq); };
+  window._loginSubmitOverride = function() {
+    var user = document.getElementById('login-user').value.trim();
+    var pass = document.getElementById('login-pass').value;
+    if (user === 'ane_c' && pass === '231234') {
+      adminUnlocked = true;
+      adminUnlockedAt = Date.now();
+      document.getElementById('login-btn').style.background = 'rgba(34,197,94,0.3)';
+      document.getElementById('login-btn').style.borderColor = 'rgba(34,197,94,0.6)';
+      cerrarLogin();
+      window._loginSubmitOverride = null;
+      if (window._pendingAdminCallback) {
+        var cb = window._pendingAdminCallback;
+        window._pendingAdminCallback = null;
+        cb();
+      }
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('login-pass').value = '';
+      document.getElementById('login-pass').focus();
+    }
+  };
+  abrirLogin();
+}
+
+// ── UNIDADES (localStorage) ───────────────────────────────────────────────
+
+function loadUserUnits(maq) {
+  try {
+    var raw = localStorage.getItem('hdm_units_' + maq);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function saveUserUnits(maq, units) {
+  try { localStorage.setItem('hdm_units_' + maq, JSON.stringify(units)); } catch(e) {}
+}
+
+
 
 var PLAN_DATA = [];
 var PLAN_FILTRADOS = [];
@@ -2275,12 +2402,23 @@ async function enviarCargaMasiva() {
   try {
     var maquina = CM_PARSED.maquina, ref = CM_PARSED.ref, desc = CM_PARSED.desc;
     var operario = CM_PARSED.operario, datos = CM_PARSED.datos;
-    var keys = Object.keys(datos);
+    // Aplicar unidades a los datos
+    var datosConUnidades = {};
+    var maqActiva = (maquina === 'AV2') ? 'av2' : 'fc1';
+    var unitsMap = loadUserUnits(maqActiva) || (maqActiva === 'av2' ? DEFAULT_UNITS_AV2 : DEFAULT_UNITS_FC1);
+    Object.keys(datos).forEach(function(k) {
+      var v = String(datos[k]||'');
+      var isNum = v !== '' && !isNaN(v.replace(',', '.'));
+      var unit = (unitsMap && unitsMap[k] !== undefined) ? unitsMap[k] : '';
+      datosConUnidades[k] = (isNum && unit) ? v + ' ' + unit : v;
+    });
+
+    var keys = Object.keys(datosConUnidades);
     var CHUNK = 30;
     var chunks = [];
     for (var i = 0; i < keys.length; i += CHUNK) {
       var chunk = {};
-      keys.slice(i, i + CHUNK).forEach(function(k){ chunk[k] = datos[k]; });
+      keys.slice(i, i + CHUNK).forEach(function(k){ chunk[k] = datosConUnidades[k]; });
       chunks.push(chunk);
     }
     var total = chunks.length;
