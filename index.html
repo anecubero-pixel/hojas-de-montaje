@@ -2281,14 +2281,14 @@ async function enviarCargaMasiva() {
       + '&desc=' + encodeURIComponent(desc)
       + '&datos=' + encodeURIComponent(JSON.stringify(datos))
       + '&userEmail=' + encodeURIComponent(operario);
-    var j1 = await apiCall(urlVersion)).json();
+    var j1 = await apiCall(urlVersion);
 
     var urlRevision = API + '?action=paraRevisar'
       + '&ref=' + encodeURIComponent(ref)
       + '&datos=' + encodeURIComponent(JSON.stringify(datos))
       + '&userEmail=' + encodeURIComponent(operario)
       + '&maquina=' + encodeURIComponent(maquina);
-    var j2 = await apiCall(urlRevision)).json();
+    var j2 = await apiCall(urlRevision);
 
     resultado.style.display = 'block';
     if (j1.ok && j2.ok) {
