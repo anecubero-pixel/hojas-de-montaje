@@ -2834,22 +2834,52 @@ function initSearchGenerico(nombre, db, inputId, suggestionsId, contentId, selec
   document.getElementById(contentId).innerHTML = '<div style="color:#9ca3af;text-align:center;padding:40px">Busca un producto para ver su hoja de montaje</div>';
 }
 
+var _pendingSelectFn = null;
+var _pendingMatches = [];
+
 function showSuggestionsGenerico(query, db, suggestionsId, selectFn) {
   var box = document.getElementById(suggestionsId);
   if (!query || query.length < 1) { box.innerHTML = ''; box.style.display = 'none'; return; }
   var q = query.toLowerCase();
-  var matches = db.filter(function(p) {
+
+  // Filtrar y quedarse solo con la versión más alta por referencia
+  var allMatches = db.filter(function(p) {
     return (String(p['PT/PR/PV']||'')).toLowerCase().includes(q) ||
            (String(p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||'')).toLowerCase().includes(q);
-  }).slice(0, 20);
+  });
+
+  // Deduplicar por PT/PR/PV manteniendo la versión más alta
+  var seen = {};
+  var matches = [];
+  allMatches.forEach(function(p) {
+    var ref = String(p['PT/PR/PV']||'');
+    var ver = parseInt(p['VERSION']||'0') || 0;
+    if (!seen[ref] || ver > seen[ref].ver) {
+      seen[ref] = { p: p, ver: ver };
+    }
+  });
+  Object.keys(seen).forEach(function(ref) { matches.push(seen[ref].p); });
+  matches = matches.slice(0, 20);
+
   if (!matches.length) { box.innerHTML = '<div style="padding:10px;color:#9ca3af;font-size:13px">Sin resultados</div>'; box.style.display = 'block'; return; }
-  box.innerHTML = matches.map(function(p) {
+
+  _pendingMatches = matches;
+  _pendingSelectFn = selectFn;
+
+  box.innerHTML = matches.map(function(p, i) {
     var ref = p['PT/PR/PV']||'';
     var desc = p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||'';
-    return '<div class="suggestion-item" onclick="(' + selectFn.toString() + ')(' + JSON.stringify(p) + ')">'
-      + '<span style="font-weight:600">' + ref + '</span> <span style="color:#6b7280;font-size:12px">' + desc + '</span></div>';
+    var ver = p['VERSION'] ? ' <span style="color:#9ca3af;font-size:10px">v'+p['VERSION']+'</span>' : '';
+    return '<div class="suggestion-item" data-idx="' + i + '" onclick="selectSuggestionGenerico(' + i + ')">'
+      + '<span style="font-weight:600">' + ref + '</span>' + ver + ' <span style="color:#6b7280;font-size:12px">' + desc + '</span></div>';
   }).join('');
   box.style.display = 'block';
+}
+
+function selectSuggestionGenerico(idx) {
+  if (_pendingSelectFn && _pendingMatches[idx]) {
+    _pendingSelectFn(_pendingMatches[idx]);
+  }
 }
 
 function selectProductT150V(p) {
@@ -2869,23 +2899,77 @@ function selectProductBOX150(p) {
 function renderProductGenerico(p, contentId, maquina) {
   var ref = String(p['PT/PR/PV']||'');
   var desc = p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||'';
-  var html = '<div class="product-header"><div class="product-ref">' + ref + '</div><div class="product-desc">' + desc + '</div>'
-    + '<div style="display:flex;gap:10px;margin-top:12px;">'
-    + '<button class="btn-download" onclick="descargarExcelGenerico(currentProduct' + maquina + ', \'' + maquina + '\')">Descargar Excel</button>'
+  var ver = p['VERSION']||'';
+  var fecha = p['FECHA DATOS']||'';
+
+  // Helper igual que FC1
+  function gp(key) { return p[key]||null; }
+  function fp(label, val) {
+    var isPend = val === 'pendiente' || val === 'PENDIENTE';
+    var v = (val===null||val===undefined||val==='') 
+      ? '<span class="field-val empty">-</span>' 
+      : isPend 
+        ? '<span class="field-val pend">pendiente</span>'
+        : '<span class="field-val">' + val + '</span>';
+    return '<div class="field"><span class="field-lbl">' + label + '</span>' + v + '</div>';
+  }
+  function sec(title, cls, content) {
+    return '<div class="section"><div class="section-header"><span class="section-title ' + cls + '">' + title + '</span></div><div class="grid-2">' + content + '</div></div>';
+  }
+
+  // Obtener todos los campos agrupados dinámicamente
+  var SKIP = ['PT/PR/PV','Descripcion PT/PR/PV','Descripción PT/PR/PV','VERSION','FECHA DATOS',
+    'Formato','Diámetro 1º','Altura 1º (Longitud)','Longitud Total (con tapón)','Tapón 1º','MATERIAL TUBO'];
+  var campos = Object.keys(p).filter(function(k){ 
+    return SKIP.indexOf(k) === -1 && !k.startsWith('Columna') && k.trim() !== ''; 
+  });
+
+  // Detectar separadores de sección
+  var SECCIONES = {
+    'FORMATO TUBO': {name:'FORMATO', cls:'fmt'},
+    'DESCRIPCION RECETA': {name:'RECETA HMI', cls:'hmi'},
+    'RETARDO ORIENTADOR 1': {name:'ORIENTADOR', cls:'hmi'},
+    'TEMPERATURA IMPUESTA 1': {name:'AIRE CALIENTE', cls:'fmt'},
+    'STOP MÁQUINA': {name:'FASES', cls:'hmi'},
+    'AJUSTE INYECTOR': {name:'VOLANTES', cls:'alt'},
+    'ALTURA DEL PLATO (BASE-ZONA SUP PLATO)': {name:'ALTURAS', cls:'alt'},
+    '2- PRESIÓN AIRE MÁQUINA': {name:'MANOMETROS', cls:'man'},
+    // BOX150 / otras
+    'CADUCIDAD ESTUCHE': {name:'FORMATO', cls:'fmt'},
+    'ALTURA MÁQUINA': {name:'ALTURAS', cls:'alt'},
+    'VELOCIDAD': {name:'RECETA HMI', cls:'hmi'},
+    'PRESION AIRE MÁQUINA': {name:'MANOMETROS', cls:'man'},
+    'PRESION AIRE MÁQUINA (BAR)': {name:'MANOMETROS', cls:'man'},
+  };
+
+  var seccionActual = {name:'DATOS', cls:'fmt'};
+  var secciones = [{info: seccionActual, campos:[]}];
+
+  campos.forEach(function(k) {
+    if (SECCIONES[k]) {
+      seccionActual = SECCIONES[k];
+      secciones.push({info: seccionActual, campos:[]});
+    }
+    secciones[secciones.length-1].campos.push(k);
+  });
+
+  var html = '<div class="product-header"><div style="flex:1">'
+    + '<div class="product-ref">REF JDE: ' + ref + '</div>'
+    + '<div class="product-name">' + desc + '</div>'
+    + '<div class="product-tags">'
+    + (ver ? '<span class="tag ver">v' + ver + ' ' + fecha + '</span>' : '')
+    + '</div></div>'
+    + '<div class="btn-group">'
+    + '<button class="btn-dl" onclick="descargarExcelGenerico(currentProduct' + maquina + ', \'' + maquina + '\')">Descargar Excel</button>'
     + '<button class="btn-nv" onclick="abrirNuevaVersionGenerica(\'' + maquina + '\')">Nueva Version</button>'
     + '</div></div>';
 
-  // Renderizar todos los campos como secciones
-  var campos = Object.keys(p).filter(function(k) { return k !== 'PT/PR/PV' && k !== 'Descripcion PT/PR/PV' && k !== 'Descripción PT/PR/PV' && k !== 'VERSION' && k !== 'FECHA DATOS'; });
-  if (campos.length > 0) {
-    html += '<div class="section-card"><div class="section-title">DATOS</div><div class="fields-grid">';
-    campos.forEach(function(k) {
-      var v = p[k];
-      var display = (v === null || v === undefined || v === '') ? '<span class="field-empty">-</span>' : '<span class="field-value">' + v + '</span>';
-      html += '<div class="field-item"><div class="field-label">' + k + '</div>' + display + '</div>';
-    });
-    html += '</div></div>';
-  }
+  secciones.forEach(function(s) {
+    if (!s.campos.length) return;
+    var content = s.campos.map(function(k){ return fp(k, gp(k)); }).join('');
+    html += sec(s.info.name, s.info.cls, content);
+  });
+
   document.getElementById(contentId).innerHTML = html;
 }
 
