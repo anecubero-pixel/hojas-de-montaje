@@ -2276,29 +2276,41 @@ async function enviarCargaMasiva() {
     var maquina = CM_PARSED.maquina, ref = CM_PARSED.ref, desc = CM_PARSED.desc;
     var operario = CM_PARSED.operario, datos = CM_PARSED.datos;
 
+    // Dividir datos en chunks de 30 campos para no superar límite de URL
+    var keys = Object.keys(datos);
+    var CHUNK = 30;
+    var chunks = [];
+    for (var i = 0; i < keys.length; i += CHUNK) {
+      var chunk = {};
+      keys.slice(i, i + CHUNK).forEach(function(k){ chunk[k] = datos[k]; });
+      chunks.push(chunk);
+    }
+
+    // Enviar primer chunk a nuevaVersion
     var urlVersion = API + '?action=nuevaVersion'
       + '&ref=' + encodeURIComponent((maquina==='AV2'?'AV2_':'FC1_')+ref)
       + '&desc=' + encodeURIComponent(desc)
-      + '&datos=' + encodeURIComponent(JSON.stringify(datos))
+      + '&datos=' + encodeURIComponent(JSON.stringify(chunks[0]))
       + '&userEmail=' + encodeURIComponent(operario);
     var j1 = await apiCall(urlVersion);
+    if (!j1.ok) throw new Error(j1.error||'Error en nuevaVersion');
 
-    var urlRevision = API + '?action=paraRevisar'
-      + '&ref=' + encodeURIComponent(ref)
-      + '&datos=' + encodeURIComponent(JSON.stringify(datos))
-      + '&userEmail=' + encodeURIComponent(operario)
-      + '&maquina=' + encodeURIComponent(maquina);
-    var j2 = await apiCall(urlRevision);
+    // Enviar cada chunk a paraRevisar
+    for (var c = 0; c < chunks.length; c++) {
+      var urlRevision = API + '?action=paraRevisar'
+        + '&ref=' + encodeURIComponent(ref)
+        + '&datos=' + encodeURIComponent(JSON.stringify(chunks[c]))
+        + '&userEmail=' + encodeURIComponent(operario)
+        + '&maquina=' + encodeURIComponent(maquina);
+      var j2 = await apiCall(urlRevision);
+      if (!j2.ok) throw new Error(j2.error||'Error en paraRevisar chunk '+c);
+    }
 
     resultado.style.display = 'block';
-    if (j1.ok && j2.ok) {
-      resultado.style.background = '#dcfce7';
-      resultado.style.color = '#15803d';
-      resultado.innerHTML = '✓ Datos enviados correctamente. Revisa VERSIONES y PARA REVISAR en Google Sheets.';
-      btn.textContent = '✓ Enviado';
-    } else {
-      throw new Error((j1.error||'') + ' ' + (j2.error||''));
-    }
+    resultado.style.background = '#dcfce7';
+    resultado.style.color = '#15803d';
+    resultado.innerHTML = '✓ Datos enviados correctamente (' + keys.length + ' campos). Revisa VERSIONES y PARA REVISAR en Google Sheets.';
+    btn.textContent = '✓ Enviado';
   } catch(e) {
     resultado.style.display = 'block';
     resultado.style.background = '#fee2e2';
