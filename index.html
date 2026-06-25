@@ -208,6 +208,14 @@ header span { font-size:12px; color:#B5D4F4; }
   <div class="sidebar-section">Maquinas</div>
   <div class="nav-tab active" onclick="switchTab('fc1')"><i class="ti ti-tool" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>FC1</div>
   <div class="nav-tab" onclick="switchTab('av2')"><i class="ti ti-package" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>AV2</div>
+  <div class="nav-tab" onclick="switchTab('t150v')"><i class="ti ti-tool" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>T150V</div>
+  <div class="nav-tab" onclick="switchTab('box150')"><i class="ti ti-package" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>BOX150</div>
+  <div class="nav-tab" onclick="switchTab('b600')"><i class="ti ti-tool" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>B600</div>
+  <div class="nav-tab" onclick="switchTab('pmm')"><i class="ti ti-package" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>PMM</div>
+  <div class="nav-tab" onclick="switchTab('ropal')"><i class="ti ti-tool" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>ROPAL</div>
+  <div class="nav-tab" onclick="switchTab('av4')"><i class="ti ti-package" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>AV4</div>
+  <div class="nav-tab" onclick="switchTab('t150m')"><i class="ti ti-tool" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>T150M</div>
+  <div class="nav-tab" onclick="switchTab('t150mt')"><i class="ti ti-tool" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>T150MT</div>
   <div class="sidebar-section" style="margin-top:16px">Gestion</div>
   <div class="nav-tab" onclick="switchTab('revisiones')"><i class="ti ti-check" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>Revisiones</div>
   <div class="nav-tab" onclick="switchTab('modificaciones')"><i class="ti ti-clipboard-list" style="font-size:14px;margin-right:6px" aria-hidden="true"></i>Modificaciones</div>
@@ -515,7 +523,111 @@ header span { font-size:12px; color:#B5D4F4; }
   </div>
 </div>
 
-<div class="tab-panel" id="tab-ayuda">
+<div class="tab-panel" id="tab-t150v">
+  <div class="search-panel">
+    <div class="search-label">Buscar producto T150V</div>
+    <div class="dropdown-wrap">
+      <input type="text" id="searchInputT150V" placeholder="Cargando base de datos T150V..." autocomplete="off" disabled style="width:100%">
+      <div id="suggestionsT150V"></div>
+    </div>
+  </div>
+  <div id="contentT150V">
+    <div class="spinner-wrap"><div class="spinner"></div><span class="spinner-txt">Cargando base de datos T150V...</span></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-box150">
+  <div class="search-panel">
+    <div class="search-label">Buscar producto BOX150</div>
+    <div class="dropdown-wrap">
+      <input type="text" id="searchInputBOX150" placeholder="Cargando base de datos BOX150..." autocomplete="off" disabled style="width:100%">
+      <div id="suggestionsBOX150"></div>
+    </div>
+  </div>
+  <div id="contentBOX150">
+    <div class="spinner-wrap"><div class="spinner"></div><span class="spinner-txt">Cargando base de datos BOX150...</span></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-b600">
+  <div class="search-panel">
+    <div class="search-label">Buscar producto B600</div>
+    <div class="dropdown-wrap">
+      <input type="text" id="searchInputB600" placeholder="Cargando base de datos B600..." autocomplete="off" disabled style="width:100%">
+      <div id="suggestionsB600"></div>
+    </div>
+  </div>
+  <div id="contentB600">
+    <div class="spinner-wrap"><div class="spinner"></div><span class="spinner-txt">Cargando base de datos B600...</span></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-pmm">
+  <div class="search-panel">
+    <div class="search-label">Buscar producto PMM</div>
+    <div class="dropdown-wrap">
+      <input type="text" id="searchInputPMM" placeholder="Cargando base de datos PMM..." autocomplete="off" disabled style="width:100%">
+      <div id="suggestionsPMM"></div>
+    </div>
+  </div>
+  <div id="contentPMM">
+    <div class="spinner-wrap"><div class="spinner"></div><span class="spinner-txt">Cargando base de datos PMM...</span></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-ropal">
+  <div class="search-panel">
+    <div class="search-label">Buscar producto ROPAL</div>
+    <div class="dropdown-wrap">
+      <input type="text" id="searchInputROPAL" placeholder="Cargando base de datos ROPAL..." autocomplete="off" disabled style="width:100%">
+      <div id="suggestionsROPAL"></div>
+    </div>
+  </div>
+  <div id="contentROPAL">
+    <div class="spinner-wrap"><div class="spinner"></div><span class="spinner-txt">Cargando base de datos ROPAL...</span></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-av4">
+  <div class="search-panel">
+    <div class="search-label">Buscar producto AV4</div>
+    <div class="dropdown-wrap">
+      <input type="text" id="searchInputAV4" placeholder="Cargando base de datos AV4..." autocomplete="off" disabled style="width:100%">
+      <div id="suggestionsAV4"></div>
+    </div>
+  </div>
+  <div id="contentAV4">
+    <div class="spinner-wrap"><div class="spinner"></div><span class="spinner-txt">Cargando base de datos AV4...</span></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-t150m">
+  <div class="search-panel">
+    <div class="search-label">Buscar producto T150M</div>
+    <div class="dropdown-wrap">
+      <input type="text" id="searchInputT150M" placeholder="Cargando base de datos T150M..." autocomplete="off" disabled style="width:100%">
+      <div id="suggestionsT150M"></div>
+    </div>
+  </div>
+  <div id="contentT150M">
+    <div class="spinner-wrap"><div class="spinner"></div><span class="spinner-txt">Cargando base de datos T150M...</span></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="tab-t150mt">
+  <div class="search-panel">
+    <div class="search-label">Buscar producto T150MT</div>
+    <div class="dropdown-wrap">
+      <input type="text" id="searchInputT150MT" placeholder="Cargando base de datos T150MT..." autocomplete="off" disabled style="width:100%">
+      <div id="suggestionsT150MT"></div>
+    </div>
+  </div>
+  <div id="contentT150MT">
+    <div class="spinner-wrap"><div class="spinner"></div><span class="spinner-txt">Cargando base de datos T150MT...</span></div>
+  </div>
+</div>
+
+
   <div class="config-panel">
     <div class="config-section">
       <div class="config-title" style="font-size:18px;color:#1d4ed8;margin-bottom:20px">Guia de uso - App Hojas de Montaje</div>
@@ -636,13 +748,21 @@ function switchTab(tab) {
     if (match) t.classList.toggle('active', match[1]===tab);
   });
   // Update panels
-  ['home','fc1','av2','config','logs','ayuda','revisiones','modificaciones','params-fc1','params-av2','planificacion','carga-masiva'].forEach(function(id){
+  ['home','fc1','av2','t150v','box150','b600','pmm','ropal','av4','t150m','t150mt','config','logs','ayuda','revisiones','modificaciones','params-fc1','params-av2','planificacion','carga-masiva'].forEach(function(id){
     var el = document.getElementById('tab-'+id);
     if (el) el.classList.toggle('active', id===tab);
   });
   if (tab==='config') loadEmailConfig();
   if (tab==='logs') loadLogs();
   if (tab==='av2' && !av2Loaded) loadDBAV2();
+  if (tab==='t150v' && !t150vLoaded) loadDBT150V();
+  if (tab==='box150' && !box150Loaded) loadDBBOX150();
+  if (tab==='b600' && !b600Loaded) loadDBB600();
+  if (tab==='pmm' && !pmmLoaded) loadDBPMM();
+  if (tab==='ropal' && !ropalLoaded) loadDBROPAL();
+  if (tab==='av4' && !av4Loaded) loadDBAV4();
+  if (tab==='t150m' && !t150mLoaded) loadDBT150M();
+  if (tab==='t150mt' && !t150mtLoaded) loadDBT150MT();
   if (tab==='revisiones') loadRevisiones();
   if (tab==='modificaciones') loadModificaciones();
   if (tab==='params-fc1') checkParamsPassword('fc1');
@@ -2419,7 +2539,230 @@ function exportarPlanCSV() {
 
 
 
-// ── CARGA MASIVA ──────────────────────────────────────────────────────────
+var DB_T150V = [];
+var DB_BOX150 = [];
+var DB_B600 = [];
+var DB_PMM = [];
+var DB_ROPAL = [];
+var DB_AV4 = [];
+var DB_T150M = [];
+var DB_T150MT = [];
+var t150vLoaded = false, box150Loaded = false, b600Loaded = false, pmmLoaded = false, ropalLoaded = false, av4Loaded = false, t150mLoaded = false, t150mtLoaded = false;
+var currentProductT150V = null, currentProductBOX150 = null, currentProductB600 = null, currentProductPMM = null, currentProductROPAL = null, currentProductAV4 = null, currentProductT150M = null, currentProductT150MT = null;
+
+async function loadDBT150V() {
+  try {
+    var json = await apiCall(API + '?action=getProductsT150V');
+    var arr = Array.isArray(json) ? json : (json && Array.isArray(json.data)) ? json.data : null;
+    if (!arr || arr.length === 0) throw new Error('Sin datos T150V');
+    DB_T150V = arr; t150vLoaded = true;
+    initSearchGenerico('T150V', DB_T150V, 'searchInputT150V', 'suggestionsT150V', 'contentT150V', function(p){ currentProductT150V=p; document.getElementById('suggestionsT150V').style.display='none'; document.getElementById('searchInputT150V').value=(p['PT/PR/PV']||'')+' - '+(p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||''); renderProductGenerico(p,'contentT150V','T150V'); });
+  } catch(e) { document.getElementById('contentT150V').innerHTML = '<div style="color:#dc2626;padding:20px">Error: '+e.message+'</div>'; }
+}
+
+async function loadDBBOX150() {
+  try {
+    var json = await apiCall(API + '?action=getProductsBOX150');
+    var arr = Array.isArray(json) ? json : (json && Array.isArray(json.data)) ? json.data : null;
+    if (!arr || arr.length === 0) throw new Error('Sin datos BOX150');
+    DB_BOX150 = arr; box150Loaded = true;
+    initSearchGenerico('BOX150', DB_BOX150, 'searchInputBOX150', 'suggestionsBOX150', 'contentBOX150', function(p){ currentProductBOX150=p; document.getElementById('suggestionsBOX150').style.display='none'; document.getElementById('searchInputBOX150').value=(p['PT/PR/PV']||'')+' - '+(p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||''); renderProductGenerico(p,'contentBOX150','BOX150'); });
+  } catch(e) { document.getElementById('contentBOX150').innerHTML = '<div style="color:#dc2626;padding:20px">Error: '+e.message+'</div>'; }
+}
+
+async function loadDBB600() {
+  try {
+    var json = await apiCall(API + '?action=getProductsB600');
+    var arr = Array.isArray(json) ? json : (json && Array.isArray(json.data)) ? json.data : null;
+    if (!arr || arr.length === 0) throw new Error('Sin datos B600');
+    DB_B600 = arr; b600Loaded = true;
+    initSearchGenerico('B600', DB_B600, 'searchInputB600', 'suggestionsB600', 'contentB600', function(p){ currentProductB600=p; document.getElementById('suggestionsB600').style.display='none'; document.getElementById('searchInputB600').value=(p['PT/PR/PV']||'')+' - '+(p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||''); renderProductGenerico(p,'contentB600','B600'); });
+  } catch(e) { document.getElementById('contentB600').innerHTML = '<div style="color:#dc2626;padding:20px">Error: '+e.message+'</div>'; }
+}
+
+async function loadDBPMM() {
+  try {
+    var json = await apiCall(API + '?action=getProductsPMM');
+    var arr = Array.isArray(json) ? json : (json && Array.isArray(json.data)) ? json.data : null;
+    if (!arr || arr.length === 0) throw new Error('Sin datos PMM');
+    DB_PMM = arr; pmmLoaded = true;
+    initSearchGenerico('PMM', DB_PMM, 'searchInputPMM', 'suggestionsPMM', 'contentPMM', function(p){ currentProductPMM=p; document.getElementById('suggestionsPMM').style.display='none'; document.getElementById('searchInputPMM').value=(p['PT/PR/PV']||'')+' - '+(p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||''); renderProductGenerico(p,'contentPMM','PMM'); });
+  } catch(e) { document.getElementById('contentPMM').innerHTML = '<div style="color:#dc2626;padding:20px">Error: '+e.message+'</div>'; }
+}
+
+async function loadDBROPAL() {
+  try {
+    var json = await apiCall(API + '?action=getProductsROPAL');
+    var arr = Array.isArray(json) ? json : (json && Array.isArray(json.data)) ? json.data : null;
+    if (!arr || arr.length === 0) throw new Error('Sin datos ROPAL');
+    DB_ROPAL = arr; ropalLoaded = true;
+    initSearchGenerico('ROPAL', DB_ROPAL, 'searchInputROPAL', 'suggestionsROPAL', 'contentROPAL', function(p){ currentProductROPAL=p; document.getElementById('suggestionsROPAL').style.display='none'; document.getElementById('searchInputROPAL').value=(p['PT/PR/PV']||'')+' - '+(p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||''); renderProductGenerico(p,'contentROPAL','ROPAL'); });
+  } catch(e) { document.getElementById('contentROPAL').innerHTML = '<div style="color:#dc2626;padding:20px">Error: '+e.message+'</div>'; }
+}
+
+async function loadDBAV4() {
+  try {
+    var json = await apiCall(API + '?action=getProductsAV4');
+    var arr = Array.isArray(json) ? json : (json && Array.isArray(json.data)) ? json.data : null;
+    if (!arr || arr.length === 0) throw new Error('Sin datos AV4');
+    DB_AV4 = arr; av4Loaded = true;
+    initSearchGenerico('AV4', DB_AV4, 'searchInputAV4', 'suggestionsAV4', 'contentAV4', function(p){ currentProductAV4=p; document.getElementById('suggestionsAV4').style.display='none'; document.getElementById('searchInputAV4').value=(p['PT/PR/PV']||'')+' - '+(p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||''); renderProductGenerico(p,'contentAV4','AV4'); });
+  } catch(e) { document.getElementById('contentAV4').innerHTML = '<div style="color:#dc2626;padding:20px">Error: '+e.message+'</div>'; }
+}
+
+
+async function loadDBT150M() {
+  try {
+    var json = await apiCall(API + '?action=getProductsT150M');
+    var arr = Array.isArray(json) ? json : (json && Array.isArray(json.data)) ? json.data : null;
+    if (!arr || arr.length === 0) throw new Error('Sin datos T150M');
+    DB_T150M = arr; t150mLoaded = true;
+    initSearchGenerico('T150M', DB_T150M, 'searchInputT150M', 'suggestionsT150M', 'contentT150M', function(p){ currentProductT150M=p; document.getElementById('suggestionsT150M').style.display='none'; document.getElementById('searchInputT150M').value=(p['PT/PR/PV']||'')+' - '+(p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||''); renderProductGenerico(p,'contentT150M','T150M'); });
+  } catch(e) { document.getElementById('contentT150M').innerHTML = '<div style="color:#dc2626;padding:20px">Error: '+e.message+'</div>'; }
+}
+
+async function loadDBT150MT() {
+  try {
+    var json = await apiCall(API + '?action=getProductsT150MT');
+    var arr = Array.isArray(json) ? json : (json && Array.isArray(json.data)) ? json.data : null;
+    if (!arr || arr.length === 0) throw new Error('Sin datos T150MT');
+    DB_T150MT = arr; t150mtLoaded = true;
+    initSearchGenerico('T150MT', DB_T150MT, 'searchInputT150MT', 'suggestionsT150MT', 'contentT150MT', function(p){ currentProductT150MT=p; document.getElementById('suggestionsT150MT').style.display='none'; document.getElementById('searchInputT150MT').value=(p['PT/PR/PV']||'')+' - '+(p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||''); renderProductGenerico(p,'contentT150MT','T150MT'); });
+  } catch(e) { document.getElementById('contentT150MT').innerHTML = '<div style="color:#dc2626;padding:20px">Error: '+e.message+'</div>'; }
+}
+
+
+function initSearchGenerico(nombre, db, inputId, suggestionsId, contentId, selectFn) {
+  var input = document.getElementById(inputId);
+  if (!input) return;
+  input.disabled = false;
+  input.placeholder = 'Buscar en ' + nombre + ' (' + db.length + ' productos)...';
+  input.addEventListener('input', function() { showSuggestionsGenerico(this.value, db, suggestionsId, selectFn); });
+  input.addEventListener('focus', function() { if (this.value) showSuggestionsGenerico(this.value, db, suggestionsId, selectFn); });
+  document.getElementById(contentId).innerHTML = '<div style="color:#9ca3af;text-align:center;padding:40px">Busca un producto para ver su hoja de montaje</div>';
+}
+
+function showSuggestionsGenerico(query, db, suggestionsId, selectFn) {
+  var box = document.getElementById(suggestionsId);
+  if (!query || query.length < 1) { box.innerHTML = ''; box.style.display = 'none'; return; }
+  var q = query.toLowerCase();
+  var matches = db.filter(function(p) {
+    return (String(p['PT/PR/PV']||'')).toLowerCase().includes(q) ||
+           (String(p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||'')).toLowerCase().includes(q);
+  }).slice(0, 20);
+  if (!matches.length) { box.innerHTML = '<div style="padding:10px;color:#9ca3af;font-size:13px">Sin resultados</div>'; box.style.display = 'block'; return; }
+  box.innerHTML = matches.map(function(p) {
+    var ref = p['PT/PR/PV']||'';
+    var desc = p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||'';
+    return '<div class="suggestion-item" onclick="(' + selectFn.toString() + ')(' + JSON.stringify(p) + ')">'
+      + '<span style="font-weight:600">' + ref + '</span> <span style="color:#6b7280;font-size:12px">' + desc + '</span></div>';
+  }).join('');
+  box.style.display = 'block';
+}
+
+function selectProductT150V(p) {
+  currentProductT150V = p;
+  document.getElementById('suggestionsT150V').style.display = 'none';
+  document.getElementById('searchInputT150V').value = (p['PT/PR/PV']||'') + ' - ' + (p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||'');
+  renderProductGenerico(p, 'contentT150V', 'T150V');
+}
+
+function selectProductBOX150(p) {
+  currentProductBOX150 = p;
+  document.getElementById('suggestionsBOX150').style.display = 'none';
+  document.getElementById('searchInputBOX150').value = (p['PT/PR/PV']||'') + ' - ' + (p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||'');
+  renderProductGenerico(p, 'contentBOX150', 'BOX150');
+}
+
+function renderProductGenerico(p, contentId, maquina) {
+  var ref = String(p['PT/PR/PV']||'');
+  var desc = p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||'';
+  var html = '<div class="product-header"><div class="product-ref">' + ref + '</div><div class="product-desc">' + desc + '</div>'
+    + '<div style="display:flex;gap:10px;margin-top:12px;">'
+    + '<button class="btn-download" onclick="descargarExcelGenerico(currentProduct' + maquina + ', \'' + maquina + '\')">Descargar Excel</button>'
+    + '<button class="btn-nv" onclick="abrirNuevaVersionGenerica(\'' + maquina + '\')">Nueva Version</button>'
+    + '</div></div>';
+
+  // Renderizar todos los campos como secciones
+  var campos = Object.keys(p).filter(function(k) { return k !== 'PT/PR/PV' && k !== 'Descripcion PT/PR/PV' && k !== 'Descripción PT/PR/PV' && k !== 'VERSION' && k !== 'FECHA DATOS'; });
+  if (campos.length > 0) {
+    html += '<div class="section-card"><div class="section-title">DATOS</div><div class="fields-grid">';
+    campos.forEach(function(k) {
+      var v = p[k];
+      var display = (v === null || v === undefined || v === '') ? '<span class="field-empty">-</span>' : '<span class="field-value">' + v + '</span>';
+      html += '<div class="field-item"><div class="field-label">' + k + '</div>' + display + '</div>';
+    });
+    html += '</div></div>';
+  }
+  document.getElementById(contentId).innerHTML = html;
+}
+
+function abrirNuevaVersionGenerica(maquina) {
+  var p = maquina === 'T150V' ? currentProductT150V : currentProductBOX150;
+  if (!p) return;
+  var ref = String(p['PT/PR/PV']||'');
+  var desc = p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||'';
+  var EXCLUIR = ['PT/PR/PV','Descripcion PT/PR/PV','Descripción PT/PR/PV','VERSION','FECHA DATOS'];
+  var allKeys = Object.keys(p).filter(function(k){ return EXCLUIR.indexOf(k) === -1; });
+
+  var fieldsHtml = '<div style="column-count:2;column-gap:20px;">';
+  allKeys.forEach(function(k) {
+    var v = p[k]||'';
+    fieldsHtml += '<div style="break-inside:avoid;margin-bottom:10px;">'
+      + '<label style="font-size:11px;color:#9ca3af;text-transform:uppercase;display:block;margin-bottom:3px">' + k + '</label>'
+      + '<input type="text" data-key="' + k.replace(/"/g,"'") + '" value="' + String(v).replace(/"/g,"'") + '" '
+      + 'oninput="this.classList.add(\'changed\')" '
+      + 'style="width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-radius:6px;padding:6px 10px;font-size:13px;outline:none;">'
+      + '</div>';
+  });
+  fieldsHtml += '</div>';
+
+  var overlay = document.getElementById('nv-overlay');
+  document.getElementById('nv-title').textContent = 'Nueva Version - ' + ref + ' ' + desc;
+  document.getElementById('nv-fields').innerHTML = fieldsHtml;
+  document.getElementById('nv-user-email').value = '';
+  document.getElementById('nv-overlay').dataset.maquina = maquina;
+  overlay.style.display = 'flex';
+}
+
+async function enviarNuevaVersionGenerica() {
+  var overlay = document.getElementById('nv-overlay');
+  var maquina = overlay.dataset.maquina;
+  var p = maquina === 'T150V' ? currentProductT150V : currentProductBOX150;
+  if (!p) return;
+  var ref = String(p['PT/PR/PV']||'');
+  var desc = p['Descripcion PT/PR/PV']||p['Descripción PT/PR/PV']||'';
+  var operario = document.getElementById('nv-user-email').value.trim();
+  if (!operario) { document.getElementById('nv-user-email').focus(); alert('El numero de operario es obligatorio.'); return; }
+  var prep = prepararDatosRevision(p, overlay);
+  var datosCompletos = prep.todos;
+
+  var url = API + '?action=paraRevisar&ref=' + encodeURIComponent(ref)
+    + '&datos=' + encodeURIComponent(JSON.stringify(datosCompletos))
+    + '&userEmail=' + encodeURIComponent(operario)
+    + '&maquina=' + encodeURIComponent(maquina);
+  var r1 = await apiCall(url);
+
+  var urlV = API + '?action=nuevaVersion&ref=' + encodeURIComponent(maquina + '_' + ref)
+    + '&desc=' + encodeURIComponent(desc)
+    + '&datos=' + encodeURIComponent(JSON.stringify(prep.modificados))
+    + '&userEmail=' + encodeURIComponent(operario);
+  var r2 = await apiCall(urlV);
+
+  if (r1.ok && r2.ok) {
+    overlay.style.display = 'none';
+    alert('✓ Enviado correctamente');
+  } else {
+    alert('Error: ' + (r1.error||r2.error||'desconocido'));
+  }
+}
+
+function descargarExcelGenerico(p, maquina) {
+  if (!p) return;
+  alert('Exportación Excel para ' + maquina + ' próximamente');
+}
+
+
 
 var CM_PARSED = null;
 
