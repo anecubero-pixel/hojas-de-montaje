@@ -986,24 +986,6 @@ const hasData = function(p){ return p['VERSION'] !== null && p['VERSION'] !== un
 // Field helpers
 const CRITICAL = ["VELOCIDAD","DIAM. Y TIP. MANGUERA-VAL. 3V A BOQ.","REGULADOR PRESION - BOMBA 1KG","REGULADOR PRESION - BOMBA 0,5KG","VEL. ROTACION VALVULA DOSAJE","VEL. BAJADA PISTON DOSAJE","VEL. SUBIDA PISTON DOSAJE","VEL. BAJADA AGUJA DOSAJE","T. RETRAZO SUBIDA AGUJA","VEL. SUBIDA AGUJA DOSAJE","RECORRIDO INICIAL AGUJA DOSAJE","RECORRIDO AGUJA DOSAJE","ALTURA CERRADOR"];
 
-function formatWithUnit(key, s) {
-  var k = key ? key.toUpperCase().trim() : '';
-  var isNum = s !== '' && !isNaN(s.replace(',', '.'));
-  if (!isNum) return s;
-  if (k.includes('(BAR)')) return s + ' bar';
-  if (k.includes('(PZ/MIN)')) return s + ' pz/min';
-  if (k.includes('(MM)')) return s + ' mm';
-  if (k === 'VELOCIDAD') return s + ' uds/min';
-  if (k === 'VELOCIDAD BANDA LOOP' || k === 'VELOCIDAD BANDA TAPADOR' || k === 'VELOCIDAD BANDA SALIDA') return s + ' %';
-  if (k.startsWith('T. ') || k.startsWith('T.DI ') || k.startsWith('T. DI ')) return s + ' ms';
-  if (k === 'VEL. ROTACION VALVULA DOSAJE' || k === 'VEL. BAJADA PISTON DOSAJE' || k === 'VEL. SUBIDA PISTON DOSAJE' || k === 'VEL. BAJADA AGUJA DOSAJE' || k === 'VEL. SUBIDA AGUJA DOSAJE') return s + ' %';
-  if (k === 'RECORRIDO MOV. DOSAJE' || k === 'RECORRIDO INICIAL AGUJA DOSAJE' || k === 'RECORRIDO AGUJA DOSAJE') return s + ' mm';
-  if (k === 'ALTURA CERRADOR') return s + ' mm';
-  if (k.startsWith('ANCHO DE GUIAS SALIDA')) return s + ' mm';
-  if (k.startsWith('F. ON') || k.startsWith('F. OFF')) return s + ' °';
-  if (k === 'ACT. SOPLO CORTA HIJO') return s;
-  return s;
-}
 
 function fmt(val, key) {
   if (val===null||val===undefined) return '<span class="field-value empty">-</span>';
@@ -2905,13 +2887,15 @@ function renderProductGenerico(p, contentId, maquina) {
   // Helper igual que FC1
   function gp(key) { return p[key]||null; }
   function fp(label, val) {
-    var isPend = val === 'pendiente' || val === 'PENDIENTE';
-    var v = (val===null||val===undefined||val==='') 
-      ? '<span class="field-val empty">-</span>' 
-      : isPend 
-        ? '<span class="field-val pend">pendiente</span>'
-        : '<span class="field-val">' + val + '</span>';
-    return '<div class="field"><span class="field-lbl">' + label + '</span>' + v + '</div>';
+    var isCrit = typeof CRITICAL !== 'undefined' && CRITICAL.some(function(c){ return label.toUpperCase().indexOf(c) !== -1; });
+    var s = (val===null||val===undefined) ? '' : String(val);
+    var v;
+    if (!s || s==='null') v = '<span class="field-value empty">-</span>';
+    else if (s.toLowerCase().includes('pendiente')) v = '<span class="field-value pend">pendiente</span>';
+    else if (s.toUpperCase()==='SI') v = '<span class="field-value si">SI</span>';
+    else if (s.toUpperCase()==='NO') v = '<span class="field-value no">NO</span>';
+    else v = '<span class="field-value">' + s + '</span>';
+    return '<div class="field"><span class="field-label' + (isCrit?' critical':'') + '">' + label + '</span>' + v + '</div>';
   }
   function sec(title, cls, content) {
     return '<div class="section"><div class="section-header"><span class="section-title ' + cls + '">' + title + '</span></div><div class="grid-2">' + content + '</div></div>';
