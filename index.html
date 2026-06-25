@@ -1855,7 +1855,7 @@ async function loadRevisiones() {
   list.innerHTML = '<div style="color:#9ca3af;font-size:13px">Cargando...</div>';
   try {
     var resp = await apiCall(API + '?action=getVersiones');
-    revisionesData = resp;
+    revisionesData = Array.isArray(resp) ? resp : [];
     renderRevisiones();
   } catch(e) {
     list.innerHTML = '<div style="color:#dc2626;font-size:13px">Error: ' + e.message + '</div>';
