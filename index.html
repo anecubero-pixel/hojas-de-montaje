@@ -2107,6 +2107,121 @@ function saveUserUnits(maq, units) {
   try { localStorage.setItem('hdm_units_' + maq, JSON.stringify(units)); } catch(e) {}
 }
 
+// ── PARÁMETROS / UNIDADES ─────────────────────────────────────────────────
+
+var DEFAULT_UNITS_FC1 = {
+  'VELOCIDAD': 'uds/min',
+  'VELOCIDAD MÁQUINA (PZ/MIN)': 'pz/min',
+  'VELOCIDAD BANDA LOOP': '%',
+  'VELOCIDAD BANDA TAPADOR': '%',
+  'VELOCIDAD BANDA SALIDA': '%',
+  'T. DI CARGA MIN. ENTRADA': 'ms',
+  'T. DI CARGA MIN. PRODUCTO': 'ms',
+  'T. DE ARRANQUE BOMBA PRODUCTO': 'ms',
+  'T. DE PARO BOMBA PRODUCTO': 'ms',
+  'T. DI CARGA MAX. FRASCO LLENADOS': 'ms',
+  'T. DI CARGA MIN. FRASCO TAPADO': 'ms',
+  'T. DI CARGA MÁX. SALIDA': 'ms',
+  'T. RETRAZO SUBIDA AGUJA': 'ms',
+  'T. SOPLO CORTA HIJO': 'ms',
+  'F. ON PARO MÁQUINA': '°',
+  'F. ON CTRL PRES. FRASCO': '°',
+  'F. ON DOSAJE': '°',
+  'F. ON BL. FLASCOS DOSAJE': '°',
+  'F. OFF BL. FLASCOS DOSAJE': '°',
+  'F. ON NITROGENO': '°',
+  'F. OFF NITROGENO': '°',
+  'VEL. ROTACION VALVULA DOSAJE': '%',
+  'VEL. BAJADA PISTON DOSAJE': '%',
+  'VEL. SUBIDA PISTON DOSAJE': '%',
+  'VEL. BAJADA AGUJA DOSAJE': '%',
+  'VEL. SUBIDA AGUJA DOSAJE': '%',
+  'RECORRIDO MOV. DOSAJE': 'mm',
+  'RECORRIDO INICIAL AGUJA DOSAJE': 'mm',
+  'RECORRIDO AGUJA DOSAJE': 'mm',
+  'ALTURA CERRADOR': 'mm',
+  'ANCHO DE GUIAS SALIDA 1': 'mm','ANCHO DE GUIAS SALIDA 2': 'mm','ANCHO DE GUIAS SALIDA 3': 'mm',
+  'ANCHO DE GUIAS SALIDA 4': 'mm','ANCHO DE GUIAS SALIDA 5': 'mm','ANCHO DE GUIAS SALIDA 6': 'mm',
+  'ANCHO DE GUIAS SALIDA 7': 'mm','ANCHO DE GUIAS SALIDA 8': 'mm','ANCHO DE GUIAS SALIDA 9': 'mm',
+  'ANCHO DE GUIAS SALIDA 10': 'mm','ANCHO DE GUIAS SALIDA 11': 'mm',
+  'PRESION AIRE MAQUINA (BAR)': 'bar',
+  'MANOMETRO NITROGENO (BAR)': 'bar'
+};
+
+var DEFAULT_UNITS_AV2 = {};
+var userUnitsFC1 = loadUserUnits('fc1') || Object.assign({}, DEFAULT_UNITS_FC1);
+var userUnitsAV2 = loadUserUnits('av2') || null;
+
+function loadParamsTable(maq) {
+  if (DB_AV2 && DB_AV2.length > 0 && Object.keys(DEFAULT_UNITS_AV2).length === 0) {
+    var AV2_EXCLUIR = ['PT/PR/PV','Descripción PT/PR/PV','Descripcion PT/PR/PV','Formato','Diámetro 1º','Altura 1º\n(Longitud)','Altura 1º (Longitud)','Longitud Total\n(con tapón)','Longitud Total (con tapón)','Tapón 1º','MATERIAL TUBO','VERSION','FECHA DATOS'];
+    Object.keys(DB_AV2[0]).forEach(function(k) {
+      if (AV2_EXCLUIR.indexOf(k) === -1) DEFAULT_UNITS_AV2[k] = '';
+    });
+  }
+  if (!userUnitsAV2) userUnitsAV2 = loadUserUnits('av2') || Object.assign({}, DEFAULT_UNITS_AV2);
+
+  var units = maq === 'fc1' ? userUnitsFC1 : userUnitsAV2;
+  var container = document.getElementById('params-' + maq + '-table');
+  if (!container) return;
+
+  if (!units || Object.keys(units).length === 0) {
+    container.innerHTML = '<div style="color:#9ca3af;font-size:13px;padding:12px">No hay campos aún. Se cargarán al arrancar la app.</div>';
+    return;
+  }
+
+  var html = '<table style="width:100%;border-collapse:collapse;font-size:13px;">'
+    + '<thead><tr style="background:#f0f4ff;">'
+    + '<th style="text-align:left;padding:8px 12px;font-weight:600;color:#374151;border-bottom:1px solid #e0e4ef;">Campo</th>'
+    + '<th style="text-align:left;padding:8px 12px;font-weight:600;color:#374151;border-bottom:1px solid #e0e4ef;width:120px;">Unidad</th>'
+    + '</tr></thead><tbody>';
+
+  Object.keys(units).forEach(function(campo, i) {
+    var bg = i % 2 === 0 ? '#fff' : '#f9fafb';
+    html += '<tr style="background:' + bg + '">'
+      + '<td style="padding:7px 12px;color:#374151;border-bottom:1px solid #f0f0f0;">' + campo + '</td>'
+      + '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'
+      + '<input type="text" data-campo="' + campo.replace(/"/g,"'") + '" value="' + (units[campo]||'') + '" '
+      + 'style="width:100px;border:1px solid #d1d5db;border-radius:5px;padding:4px 8px;font-size:12px;outline:none;">'
+      + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function saveParams(maq) {
+  requireAdmin(function() {
+    var units = {};
+    document.querySelectorAll('#params-' + maq + '-table input[data-campo]').forEach(function(inp) {
+      units[inp.dataset.campo] = inp.value.trim();
+    });
+    saveUserUnits(maq, units);
+    if (maq === 'fc1') userUnitsFC1 = units;
+    else userUnitsAV2 = units;
+    var msg = document.getElementById('params-' + maq + '-msg');
+    if (msg) { msg.style.display = 'block'; setTimeout(function(){ msg.style.display = 'none'; }, 2000); }
+  });
+}
+
+function resetParams(maq) {
+  requireAdmin(function() {
+    if (!confirm('¿Restaurar las unidades por defecto para ' + maq.toUpperCase() + '?')) return;
+    localStorage.removeItem('hdm_units_' + maq);
+    if (maq === 'fc1') userUnitsFC1 = Object.assign({}, DEFAULT_UNITS_FC1);
+    else userUnitsAV2 = Object.assign({}, DEFAULT_UNITS_AV2);
+    loadParamsTable(maq);
+  });
+}
+
+function formatWithUnit(key, s) {
+  var isNum = s !== '' && !isNaN(String(s).replace(',', '.'));
+  if (!isNum) return s;
+  var maq = (document.getElementById('tab-av2') && document.getElementById('tab-av2').classList.contains('active')) ? 'av2' : 'fc1';
+  var units = maq === 'av2' ? (userUnitsAV2 || DEFAULT_UNITS_AV2) : (userUnitsFC1 || DEFAULT_UNITS_FC1);
+  var unit = (units && units[key] !== undefined) ? units[key] : '';
+  return unit ? s + ' ' + unit : s;
+}
+
 
 
 var PLAN_DATA = [];
