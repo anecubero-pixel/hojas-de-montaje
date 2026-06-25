@@ -2275,8 +2275,6 @@ async function enviarCargaMasiva() {
   try {
     var maquina = CM_PARSED.maquina, ref = CM_PARSED.ref, desc = CM_PARSED.desc;
     var operario = CM_PARSED.operario, datos = CM_PARSED.datos;
-
-    // Dividir datos en chunks de 30 campos para no superar límite de URL
     var keys = Object.keys(datos);
     var CHUNK = 30;
     var chunks = [];
@@ -2285,31 +2283,26 @@ async function enviarCargaMasiva() {
       keys.slice(i, i + CHUNK).forEach(function(k){ chunk[k] = datos[k]; });
       chunks.push(chunk);
     }
+    var total = chunks.length;
 
-    // Enviar primer chunk a nuevaVersion
-    var urlVersion = API + '?action=nuevaVersion'
-      + '&ref=' + encodeURIComponent((maquina==='AV2'?'AV2_':'FC1_')+ref)
-      + '&desc=' + encodeURIComponent(desc)
-      + '&datos=' + encodeURIComponent(JSON.stringify(chunks[0]))
-      + '&userEmail=' + encodeURIComponent(operario);
-    var j1 = await apiCall(urlVersion);
-    if (!j1.ok) throw new Error(j1.error||'Error en nuevaVersion');
-
-    // Enviar cada chunk a paraRevisar
+    // Enviar todos los chunks al buffer del Apps Script
     for (var c = 0; c < chunks.length; c++) {
-      var urlRevision = API + '?action=paraRevisar'
+      var url = API + '?action=bufferDatos'
         + '&ref=' + encodeURIComponent(ref)
+        + '&chunk=' + c
+        + '&total=' + total
         + '&datos=' + encodeURIComponent(JSON.stringify(chunks[c]))
         + '&userEmail=' + encodeURIComponent(operario)
-        + '&maquina=' + encodeURIComponent(maquina);
-      var j2 = await apiCall(urlRevision);
-      if (!j2.ok) throw new Error(j2.error||'Error en paraRevisar chunk '+c);
+        + '&maquina=' + encodeURIComponent(maquina)
+        + '&desc=' + encodeURIComponent(desc);
+      var r = await apiCall(url);
+      if (!r.ok && !r.pending) throw new Error(r.error || 'Error en chunk ' + c);
     }
 
     resultado.style.display = 'block';
     resultado.style.background = '#dcfce7';
     resultado.style.color = '#15803d';
-    resultado.innerHTML = '✓ Datos enviados correctamente (' + keys.length + ' campos). Revisa VERSIONES y PARA REVISAR en Google Sheets.';
+    resultado.innerHTML = '✓ Datos enviados correctamente (' + keys.length + ' campos en una sola fila). Revisa VERSIONES y PARA REVISAR en Google Sheets.';
     btn.textContent = '✓ Enviado';
   } catch(e) {
     resultado.style.display = 'block';
